@@ -24,6 +24,7 @@ class UserService
         try {
             $user = $this->model->findById($id, $fields);
             $user['is_author'] = (bool) $user['is_author'];
+            $user['is_admin'] = (bool) $user['is_admin'];
             return new Response(200, null, true, $user);
         } catch (Exception $th) {
             return new Response(404, $th->getMessage(), false);
@@ -37,9 +38,10 @@ class UserService
     public function list()
     {
         try {
-            $users = $this->model->list(["id", "email", "name", "bio", 'is_author', "image_url", "created_at", "updated_at"]);
+            $users = $this->model->list(["id", "email", "name", "bio", 'is_author', 'is_admin', "image_url", "created_at", "updated_at"]);
             array_map(function ($user) {
                 $user->is_author = (bool) $user->is_author;
+                $user->is_admin = (bool) $user->is_admin;
                 return $user;
             }, $users);
             return new Response(200, 'all users data', true, $users);
@@ -55,7 +57,8 @@ class UserService
             if ($insertedData === false) {
                 return new Response(400, 'error insert data', false, null, null);
             }
-            return new Response(201, 'user created successfully', true, null, null);
+            $data = ['id' => $insertedData];
+            return new Response(201, 'user created successfully', true, $data, null);
         } catch (ValidationException $e) {
             return new Response($e->getCode(), $e->getMessage(), false, null, $e->getErrors());
         } catch (Exception $e){

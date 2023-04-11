@@ -6,7 +6,7 @@ use App\Models\BadgeCollection;
 use App\Services\BadgeCollectionService;
 use App\Models\Product;
 use CodeIgniter\RESTful\ResourceController;
-
+use stdClass;
 
 class BadgeCollectionController extends ResourceController
 {
@@ -95,11 +95,14 @@ class BadgeCollectionController extends ResourceController
 
     public function sendBadgeUserToProduct($productId)
     {
+     
+        
+
         $request = $this->request->getJSON(true);
         
         helper('jwt');
-        
         $userId = toPayloadFromRequset($this->request)['id'];
+        
         $requset['product_id'] = $productId;
         $requset['user_id'] = $userId;
         
@@ -122,18 +125,30 @@ class BadgeCollectionController extends ResourceController
     {
         helper('jwt');
         $userId = toPayloadFromRequset($this->request)['id'];
+        $userId = "1673229338683420";
 
-        $exhibitionModel = new Product();
-        $exhibitionQuery = $exhibitionModel->select('e.*')->join('exhibitions e', 'e.id = products.exhibition_id')->where('products.id', $productId);
+        $product = new Product();
+        $exhibitionQuery = $product->select('e.*')->join('exhibitions e', 'e.id = products.exhibition_id')->where('products.id', $productId);
         $exhibitionResult = $exhibitionQuery->get()->getResult();
+
+        // Refactored
+        // $bc = new BadgeCollection();
+        // $q = $bc->select(
+        //     ['badges_collection.badge_type', 'badges_collection.comment',
+        //     'badges_collection.created_at', 'count(*) as badge_count', 'e.name exhibition_name']
+        //     )
+        //     ->join('exhibitions e', 'e.id = badges_collection.exhibition_id')
+        //     ->where('badges_collection.product_id', $productId)
+        //     ->where('user_id', $userId);
 
         $bc = new BadgeCollection();
         $q = $bc->select(['e.*'])->join('exhibitions e', 'e.id = badges_collection.exhibition_id')->where('product_id', $productId)->where('user_id', $userId);
         $hasGiven = $q->get()->getResult();
         if ($hasGiven) {
-            return $this->respond(['has_given' => true, 'message' => 'this user has given badge to this product'], 200);
+            return $this->respond(['has_given' => true, 'message' => 'this user has given badge to this product',  'data' => $hasGiven], 200);
         }
         return $this->respond(['has_given' => false, 'exhibitions' => $exhibitionResult[0], 'message' => 'this user belum pernah memberikan badge pada produk ini'], 200);
+        // return $this->respond(['has_given' => false, 'message' => 'this user belum pernah memberikan badge pada produk ini'], 200);
     }
 
 

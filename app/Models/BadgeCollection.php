@@ -5,6 +5,7 @@ namespace App\Models;
 use CodeIgniter\Model;
 use CodeIgniter\Database\Exceptions\DatabaseException;
 use App\Exceptions\ValidationException;
+use \Exception;
 use Throwable;
 
 

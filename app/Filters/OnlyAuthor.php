@@ -2,9 +2,8 @@
 
 namespace App\Filters;
 
-use App\Api\Domains\BadgeInventory\Repository\SqlBadgeInventoryRepository;
-use App\Api\Domains\ProductMember\Model\ProductMember;
-use App\Api\Domains\User\Model\User;
+use App\Models\ProductMember;
+use App\Models\User;
 use CodeIgniter\API\ResponseTrait;
 use CodeIgniter\Filters\FilterInterface;
 use CodeIgniter\HTTP\RequestInterface;

@@ -40,14 +40,15 @@ $routes->setAutoRoute(true);
  * --------------------------------------------------------------------
  */
  
- $routes->get('fitalks', 'Fitalk\Controller\FitalkController::list');
-$routes->put('fitalks/(:segment)', 'Fitalk\Controller\FitalkController::setStatus/$1');
-$routes->get('fitalks/check/partisipant/(:segment)', 'Fitalk\Controller\FitalkController::isExists/$1');
+$routes->get('fitalks', 'FitalkController::list');
+$routes->post('fitalks', 'FitalkController::create');
+$routes->put('fitalks/(:segment)/present', 'FitalkController::setPresent/$1');
+$routes->get('fitalks/check/partisipant/(:segment)', 'FitalkController::isExists/$1');
 
 /**
  * products members
  */
-$routes->get('banners', 'Banner\BannerController::index');
+$routes->get('banners', 'BannerController::index');
 
 $routes->get('member/product', 'ProductMemberController::getProductOfUserMember', ['filter' => 'auth']);
 $routes->post('products/members/', 'ProductMemberController::create', ['filter' => 'OnlyAuthor']);
@@ -104,7 +105,7 @@ $routes->get('auth/me', 'UserController::me', ['filter' => 'auth']);
  * Use cases
  */
 $routes->get('user/check/products/(:segment)', 'BadgeCollectionController::checkUserHasGivenBadge/$1');
-$routes->get('user/send/badge/products/(:segment)', 'BadgeCollectionController::sendBadgeUserToProduct/$1', ['filter' => 'MakeSureEnoughBadge']);
+$routes->post('user/send/badge/products/(:segment)', 'BadgeCollectionController::sendBadgeUserToProduct/$1', ['filter' => 'MakeSureEnoughBadge']);
 $routes->post('user/cancle/badge/products/(:segment)', 'BadgeCollectionController::cancleBadgeOfProduct/$1', ['filter' => 'auth']);
 $routes->get('products/(:segment)/badges', 'BadgeCollectionController::getBadgesOfProduct/$1');
 $routes->get('products/(:segment)/comments', 'BadgeCollectionController::getCommentsOfProduct/$1');

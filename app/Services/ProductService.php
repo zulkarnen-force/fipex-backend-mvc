@@ -214,7 +214,7 @@ class ProductService
         $categoryModel = new Category();
         $category = $categoryModel->findById($categoryId);
         try {
-            $products = $this->model->getWhere(['category_id' => $categoryId]);
+            $products = $this->model->getByQuery(['category_id' => $categoryId]);
             array_map(function ($prd) use ($category) {
                 $prd->thumbnails = $this->getThumbnails($prd->id);
                 $prd->total_points = (int) $prd->total_points;

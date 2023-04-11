@@ -3,9 +3,10 @@
 namespace App\Services;
 
 
-use App\Api\Domains\ProductMember\Repository\IProductMemberRepository;
+use App\Api\Domains\ProductMember\model\IProductMembermodel;
 use App\Api\Domains\Product\Model\Product;
 use App\Exceptions\ValidationException;
+use App\Models\ProductMember;
 use App\Utils\Response;
 use CodeIgniter\Database\Exceptions\DatabaseException;
 use Exception;
@@ -13,17 +14,17 @@ use Throwable;
 
 class ProductMemberService
 {
-    public $repository;
-    function __construct(IProductMemberRepository $repository)
+    public $model;
+    function __construct(ProductMember $model)
     {
-        $this->repository = $repository;
+        $this->model = $model;
     }
 
 
     public function find($id, $fields = ["*"])
     {
         try {
-            $user = $this->repository->find($id, $fields);
+            $user = $this->model->findById($id, $fields);
             return new Response(200, null, true, $user);
         } catch (Exception $th) {
             return new Response(404, $th->getMessage(), false);
@@ -33,7 +34,7 @@ class ProductMemberService
 
     public function list($fields = ["*"])
     {
-        $productMembers = $this->repository->list($fields);
+        $productMembers = $this->model->list($fields);
         return new Response(200, 'all product members data', true, $productMembers);
     }
 
@@ -41,7 +42,7 @@ class ProductMemberService
     public function create($data)
     {
         try {
-            $insertedData = $this->repository->store($data);
+            $insertedData = $this->model->store($data);
             if ($insertedData === false) {
                 return new Response(400, 'error insert data', false, null, null);
             }
@@ -60,8 +61,8 @@ class ProductMemberService
     public function update(string $id, $data = [])
     {
         try {
-            $this->repository->find($id);
-            $userUpdated = $this->repository->update($id, $data);
+            $this->model->findById($id);
+            $userUpdated = $this->model->updateById($id, $data);
             if ($userUpdated === false) {
                 throw new Exception('error on update data');
             }
@@ -77,8 +78,8 @@ class ProductMemberService
     public function delete($id)
     {
         try {
-            $response = $this->repository->find($id);
-            $deleted = $this->repository->delete($id);
+            $response = $this->model->findById($id);
+            $deleted = $this->model->deleteById($id);
             return new Response(200,'product member deleted succesfully', true, $response, null);
         } catch (DatabaseException $th) {
             return new Response(500, $th->getMessage(), false, null);
@@ -91,7 +92,7 @@ class ProductMemberService
     public function getById($id)
     {
         try {
-            $result = $this->repository->find($id);
+            $result = $this->model->findById($id);
             return new Response(200, 'product data', true, $result);
         } catch (Exception $e) {
             return new Response(400, $e->getMessage(), false);
@@ -102,7 +103,7 @@ class ProductMemberService
     public function getProductOfMemberUser($id)
     {
         try {
-            $result = $this->repository->getProductOfMemberUser($id);
+            $result = $this->model->getProductOfMemberUser($id);
             return new Response(200, 'product of user', true, $result);
         } catch (Exception $e) {
             return new Response(404, $e->getMessage(), false, null, null);

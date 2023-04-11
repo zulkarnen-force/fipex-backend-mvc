@@ -36,7 +36,7 @@ class User extends Model
 
 
     
-    protected $beforeInsert = ['encryptPassword', 'generateId'];
+    protected $beforeInsert = ['encryptPassword'];
     protected $beforeUpdate = ['beforeUpdate'];
 
     protected function generateId($data)
@@ -101,11 +101,13 @@ class User extends Model
     public function store($data)
     {
 		try {
+			$id = uniqid();
+			$data['id'] = $id;
 			$query = $this->insert($data);
 			if ($query === false) {
 				throw new ValidationException($this->errors(), "validation error", 400);
 			}
-			return true;
+			return $id;
 		} catch (Exception $e) {
 			throw $e;
 		}

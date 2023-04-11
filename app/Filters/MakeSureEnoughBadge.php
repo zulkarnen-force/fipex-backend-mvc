@@ -15,6 +15,7 @@ class MakeSureEnoughBadge implements FilterInterface
 
     public function before(RequestInterface $request, $arguments = null)
     {
+        $data = new \stdClass();
         $authenticationHeader = $request->getServer('HTTP_AUTHORIZATION');
         if( is_null($authenticationHeader) || empty($authenticationHeader)) {
             $response = service('response');
@@ -30,7 +31,14 @@ class MakeSureEnoughBadge implements FilterInterface
             $repo = new BadgeInventory();
             try {
                 $result = $repo->getByQuery(['user_id' => $userId], ['*']);
-                return var_dump($result);
+                // $exhibitionId = $result[0]->exhibition_id;
+                // $data->exhibition_id = $exhibitionId;
+                // return var_dump($exhibitionId);
+                // $badgeType = $result[0]['badge_type'];
+                // $data->user->badgeType = $badgeType;
+                // return var_dump($exhibitionId, $badgeType);
+                // return var_dump();
+               
             } catch(Exception $e) {
                 $response = service('response');
                 $response->setStatusCode($e->getCode());
@@ -46,6 +54,9 @@ class MakeSureEnoughBadge implements FilterInterface
                 $response->setJSON(["message" => 'your badge is not enough 😥']);
                 return $response;
             }
+
+            // $request->user = $data; 
+            return $request;
            
     }
 

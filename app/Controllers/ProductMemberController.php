@@ -2,16 +2,15 @@
 
 namespace App\Controllers;
 
-use App\Api\Domains\ProductMember\Model\ProductMember;
-use App\Api\Domains\ProductMember\Service\ProductMemberService;
-use App\Api\Domains\ProductMember\Repository\SqlProductMemberRepository;
+use App\Models\ProductMember;
+use App\Services\ProductMemberService;
 use CodeIgniter\RESTful\ResourceController;
 
 class ProductMemberController extends ResourceController
 {
     public $service;
     public function __construct() {
-        $this->service = new ProductMemberService(new SqlProductMemberRepository());
+        $this->service = new ProductMemberService(new ProductMember());
     }
 
     public function index()
