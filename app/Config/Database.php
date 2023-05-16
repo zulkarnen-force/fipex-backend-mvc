@@ -35,7 +35,7 @@ class Database extends Config
         'hostname' => 'localhost',
         'username' => 'root',
         'password' => '',
-        'database' => 'development-fipex',
+        'database' => 'ruap8776_fipex',
         'DBDriver' => 'MySQLi',
         'DBPrefix' => '',
         'pConnect' => false,
