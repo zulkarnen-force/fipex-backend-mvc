@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\BadgeCollection;
+use App\Models\BadgeInventory;
 use App\Models\Product;
 use App\Models\ProductMember;
 use App\Models\User;
@@ -79,7 +80,7 @@ class BadgeCollectionService
     public function delete($id)
     {
         try {
-            $response = $this->model->findByIdd($id);
+            $response = $this->model->findById($id);
             $deleted = $this->model->deleteById($id);
             return new Response(200, 'exhibition deleted', true, $response, null);
         } catch (DatabaseException $th) {
@@ -197,14 +198,15 @@ class BadgeCollectionService
         try {
             $userId = $request['user_id'];
             $productId = $request['product_id'];
-            
+            $bInventory = new BadgeInventory();
+            $badgeInventoryUser = $bInventory->where(['user_id' => $userId])->get()->getResult();
+            $request['badge_type'] = $badgeInventoryUser[0]->badge_type;
+            $request['exhibition_id'] = $badgeInventoryUser[0]->exhibition_id;
             $isHasGivenBadge = $this->model->isUserHasGivenBadge($userId, $productId);
             $productOwned = $this->isOwnedProductOfUser($userId, $productId);
-
             if ($productOwned) {
                 return new Response(401, 'users can only send badges to other products, but this request sends to the property of the user', false, null);
             }
-
             if ($isHasGivenBadge) {
                 return new Response(400, 'your has been given badge to this product 🖐', false, null);
             }

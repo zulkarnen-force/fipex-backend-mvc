@@ -34,16 +34,17 @@ function toPayloadFromRequset(Request $request)
     return validateJWTFromRequest($token);
 }
 
-function getSignedJWTForUser(string $id, string $email, string $is_auhtor, string $name)
+function getSignedJWTForUser($user)
 {   
     $issuedAtTime = time();
     $tokenTimeToLive = strtotime('+1 day', $issuedAtTime);
     $tokenExpiration = $issuedAtTime + $tokenTimeToLive;
     $payload = [
-        'email' => $email,
-        'id' => $id,
-        'is_author' =>  (bool) $is_auhtor,
-        'name' =>  $name,
+        'email' => $user->email,
+        'id' => $user->id,
+        'is_author' =>  (bool) $user->is_author,
+        'is_admin' =>  (bool) $user->is_admin,
+        'name' =>  $user->name,
         'iat' => $issuedAtTime,
         'exp' => $tokenExpiration,
     ]; 

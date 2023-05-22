@@ -43,7 +43,8 @@ class CategoryService
             if ($insertedData === false) {
                 return new Response(400, 'error insert data', false, null, null);
             }
-            return new Response(201, 'category created successfully', true, null, null);
+            $data = ['id' => $insertedData];
+            return new Response(201, 'category created successfully', true, $data, null);
         } catch (ValidationException $e) {
             return new Response($e->getCode(), $e->getMessage(), false, null, $e->getErrors());
         } catch (Exception $e) {
@@ -63,6 +64,7 @@ class CategoryService
             if ($userUpdated === false) {
                 throw new Exception('error on update data');
             }
+            
             return new Response(200, 'category updated successfully', true, $userUpdated);
         } catch (ValidationException $e) {
             return new Response(400, $e->getErrors(), false, null, null);

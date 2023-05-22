@@ -14,10 +14,11 @@ class Category extends Model
     protected $table = 'categories';
     protected $primaryKey = 'id';
     protected $allowedFields = [
+        'id',
         'category_name',
         'exhibition_id',
     ];
-    protected $beforeInsert = ['generateId'];
+    // protected $beforeInsert = ['generateId'];
 
     protected function generateId($data) {
        $data['data']['id'] =  uniqid();
@@ -43,11 +44,12 @@ class Category extends Model
         public function store($data)
         {
             try {
+                $data['id'] = uniqid();
                 $query = $this->insert($data);
                 if ($query === false) {
                     throw new ValidationException($this->errors(), "validation error", 400);
                 }
-                return true;
+                return $data['id'];
             } catch (Exception $e) {
                 throw $e;
             }

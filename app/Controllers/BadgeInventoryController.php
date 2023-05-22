@@ -79,7 +79,6 @@ class BadgeInventoryController extends ResourceController
     public function destroy($id = null)
     {
         $response = $this->service->delete($id);
-
         return $this->respond($response->getResponse(), $response->getCode());
     }
 

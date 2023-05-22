@@ -16,6 +16,7 @@ class BadgeInventory extends Model
     protected $updatedField = 'updated_at';
 
     protected $allowedFields = [
+        'id',
         'badge_type',
         'badge_count',
         'user_id',
@@ -33,7 +34,7 @@ class BadgeInventory extends Model
      
     ];
 
-    protected $beforeInsert   = ['generateId'];
+    // protected $beforeInsert   = ['generateId'];
     protected function generateId($data)
     {
         $data['data']['id'] = uniqid();
@@ -45,11 +46,13 @@ class BadgeInventory extends Model
         public function store($data)
         {
             try {
+                $id = uniqid();
+                $data['id'] = $id;
                 $query = $this->insert($data);
                 if ($query === false) {
                     throw new ValidationException($this->errors(), "validation error", 400);
                 }
-                return true;
+                return  $data['id'];
             } catch (Exception $e) {
                 throw $e;
             }

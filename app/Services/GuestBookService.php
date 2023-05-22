@@ -44,7 +44,8 @@ class GuestBookService
             if ($insertedData === false) {
                 return new Response(400, 'error insert data', false, null, null);
             }
-            return new Response(200, 'exhibition inserted successfully', true, null, null);
+            $data = ['id' => $insertedData];
+            return new Response(201, 'guest book inserted successfully', true, $data, null);
         } catch (ValidationException $e) {
             return new Response($e->getCode(), $e->getMessage(), false, null, $e->getErrors());
         } catch (Exception $e) {
@@ -79,7 +80,7 @@ class GuestBookService
         try {
             $response = $this->model->findById($id);
             $deleted = $this->model->deleteById($id);
-            return new Response(200, 'exhibition deleted', true, $response, null);
+            return new Response(200, 'guest book deleted successfully', true, $response, null);
         } catch (DatabaseException $th) {
             return new Response($th->getCode(), $th->getMessage(), false, null);
         } catch (Exception $th) {

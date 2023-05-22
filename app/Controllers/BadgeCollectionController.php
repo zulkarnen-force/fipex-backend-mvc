@@ -95,17 +95,11 @@ class BadgeCollectionController extends ResourceController
 
     public function sendBadgeUserToProduct($productId)
     {
-     
-        
-
         $request = $this->request->getJSON(true);
-        
         helper('jwt');
-        $userId = toPayloadFromRequset($this->request)['id'];
-        
+        $userId = toPayloadFromRequset($this->request)['id'];   
         $requset['product_id'] = $productId;
         $requset['user_id'] = $userId;
-        
         $result = $this->service->sendBadgeToProduct($requset);
         return $this->respond($result->getResponse(), $result->getCode());
     }

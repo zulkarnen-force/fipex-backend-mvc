@@ -21,7 +21,7 @@ class ProductMember extends Model
 
     protected $updatedField = 'updated_at';
 
-    protected $beforeInsert = ['generateId'];
+    // protected $beforeInsert = ['generateId'];
 
     protected function generateId($data) {
        $data['data']['id'] =  uniqid();
@@ -49,11 +49,12 @@ class ProductMember extends Model
         public function store($data)
         {
             try {
+                $data['id'] = uniqid();
                 $query = $this->insert($data);
                 if ($query === false) {
                     throw new ValidationException($this->errors(), "validation error", 400);
                 }
-                return true;
+                return $data['id'];
             } catch (Exception $e) {
                 throw $e;
             }

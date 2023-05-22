@@ -309,7 +309,6 @@ class BadgeCollection extends Model
 			
 
 
-			// var_dump($result);
 		return $badges;
 
 		} catch (\Throwable $th) {
@@ -318,5 +317,18 @@ class BadgeCollection extends Model
 
 
 	}
+
+
+    function getBadgeOfUser($userId)
+    {
+        try {
+			$query = $this->where(['user_id' => $userId]);
+			$result = $query->get()->getResult();
+			return $result;
+		} catch (Exception $e) {
+			throw $e;
+		}
+    }
+    
 
 }

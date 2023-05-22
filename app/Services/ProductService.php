@@ -68,7 +68,8 @@ class ProductService
             if ($insertedData === false) {
                 return new Response(400, 'error insert data', false, null, null);
             }
-            return new Response(201, 'product created successfully', true, null, null);
+            $data = ['id' => $insertedData];
+            return new Response(201, 'product created successfully', true, $data, null);
         } catch (ValidationException $e) {
             return new Response($e->getCode(), $e->getMessage(), false, null, $e->getErrors());
         } catch (Exception $e){
@@ -107,6 +108,7 @@ class ProductService
             return new Response(404, $th->getMessage(), false, null);
         }
     }
+
 
 
     public function getProductOfAuthor($authorId)

@@ -44,7 +44,8 @@ class BadgeInventoryService
             if ($insertedData === false) {
                 return new Response(400, 'error insert data', false, null, null);
             }
-            return new Response(201, 'badge inventory created successfully', true, null, null);
+            $data = ['id' => $insertedData];
+            return new Response(201, 'badge inventory created successfully', true, $data, null);
         } catch (ValidationException $e) {
             return new Response($e->getCode(), $e->getMessage(), false, null, $e->getErrors());
         } catch (Exception $e){
@@ -77,7 +78,7 @@ class BadgeInventoryService
         try {
             $response = $this->model->findById($id);
             $deleted = $this->model->deleteById($id);
-            return new Response(200, 'exhibition deleted', true, $response, null);
+            return new Response(200, 'badge inventory has been deleted successfully', true, $response, null);
         } catch (DatabaseException $th) {
             return new Response($th->getCode(), $th->getMessage(), false, null);
         } catch (Exception $th) {

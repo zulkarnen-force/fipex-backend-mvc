@@ -16,12 +16,13 @@ class ProductThumbnail extends Model
     protected $table = 'product_thumbnails';
     protected $primaryKey = 'id';
     protected $allowedFields = [
+        'id',
         'product_id',
         'image_url',
     ];
 
     protected $updatedField = 'updated_at';
-    protected $beforeInsert = ['generateId'];
+    // protected $beforeInsert = ['generateId'];
 
     protected function generateId($data)
     {
@@ -53,11 +54,12 @@ class ProductThumbnail extends Model
         public function store($data)
         {
             try {
+                $data['id'] = uniqid();
                 $query = $this->insert($data);
                 if ($query === false) {
                     throw new ValidationException($this->errors(), "validation error", 400);
                 }
-                return true;
+                return $data['id'];
             } catch (Exception $e) {
                 throw $e;
             }

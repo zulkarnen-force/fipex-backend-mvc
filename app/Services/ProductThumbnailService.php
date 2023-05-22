@@ -44,7 +44,8 @@ class ProductThumbnailService
             if ($insertedData === false) {
                 return new Response(400, 'error insert data', false, null, null);
             }
-            return new Response(200, 'exhibition inserted successfully', true, null, null);
+            $data = ['id' => $insertedData];
+            return new Response(201, 'product thumbnail inserted successfully', true, $data, null);
         } catch (ValidationException $e) {
             return new Response($e->getCode(), $e->getMessage(), false, null, $e->getErrors());
         } catch (Exception $e) {
@@ -98,29 +99,6 @@ class ProductThumbnailService
             return new Response(400, $e->getMessage(), false);
         }
     }
-
-
-    // public function login($request)
-    // {
-    //     try {
-    //         $user = $this->model->getByQuery(['email' => $request['email']])[0];
-    //         $hashPassword = $user->password;
-    //         $plainPassword = $request['password'];
-    //         if (!password_verify($plainPassword, $hashPassword)) {
-    //             return new Response(400, 'password not match', false);
-    //         }
-    //         helper('jwt');
-    //         $token = getSignedJWTForUser($user->id, $user->email);
-    //         $response = new Response(200, 'user authenticated', true);
-    //         $response->setResult(['token' => $token]);
-    //         return $response;
-    //     } catch (ValidationException $e) {
-    //         return new Response(400, $e->getErrors(), false);
-    //     } catch (Exception $e) {
-    //         return new Response(400, $e->getMessage(), false);
-    //     }
-    // }
-
 
     public function getProductByAuthorId(string $userId, array $fields = ["*"])
     {
