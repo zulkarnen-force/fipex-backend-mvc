@@ -101,7 +101,7 @@ class ProductService
         try {
             $response = $this->model->findById($id);
             $deleted = $this->model->deleteById($id);
-            return new Response(200, 'exhibition deleted', true, $response, null);
+            return new Response(200, 'product deleted successfully', true, $response, null);
         } catch (DatabaseException $th) {
             return new Response($th->getCode(), $th->getMessage(), false, null);
         } catch (Exception $th) {

@@ -12,9 +12,11 @@ use Throwable;
 class UserService
 {
     public $model;
+    public $email;
     function __construct(User $model)
     {
         $this->model = $model;
+        $this->email = \Config\Services::email();
     }
 
  
@@ -50,23 +52,94 @@ class UserService
         }
     }
 
-    public function create($data)
+    private function createOtp() : Array
+    {
+        $otp_expires = time() + 1800;
+        $otp = mt_rand(100000, 999999);
+        $data['otp'] = $otp;
+        $data['otp_expires'] = $otp_expires;
+        return $data;
+    }
+
+    
+    private function getActivationLink($otp)
+    {
+        return base_url('users/verify?otp='.$otp);
+    }
+
+    public function sendOneTimePassword($email, $otp)
     {
         try {
-            $insertedData = $this->model->store($data);
+            $this->email->setFrom('fipex@ruang-ekspresi.id', 'Manajemen FiPEX - Information System');
+            $this->email->setTo($email);
+            $message = "Berikut adalah kode verifikasi yang dapat digunakan untuk login ke FiPEX Apps: <br>".
+            "<h2>".$otp."</h2> <br>".
+            '<p>Atau klik tautan berikut untuk mengaktifkan akun Anda: '. $this->getActivationLink($otp). '</p>'.
+            "<i>Kode di atas hanya berlaku untuk 30 menit. Jangan memberitahukan kode tersebut ke siapapun, termasuk pihak panitia FiPEX.</i>";
+            $this->email->setSubject('FiPEX Account Activation');
+            $this->email->setMessage($message);  
+            if(!$this->email->send()) { 
+                throw new Exception('error sending activation email', 400);
+            }
+            return true;
+        } catch (ValidationException $e) {
+            throw $e;
+        } catch (Exception $e){
+            throw $e;
+        }
+    }
+    public function create($requestBody)
+    {
+        try {
+            $email = $requestBody['email'];
+            $activation_expires = time() + 1800;
+            $otp = mt_rand(100000, 999999);
+            $requestBody['otp'] = $otp;
+            $requestBody['otp_expires'] = $activation_expires;
+            $insertedData = $this->model->store($requestBody);
+            $this->sendOneTimePassword($email, $otp);
             if ($insertedData === false) {
                 return new Response(400, 'error insert data', false, null, null);
             }
             $data = ['id' => $insertedData];
-            return new Response(201, 'user created successfully', true, $data, null);
+            return new Response(201, 'user register successfully successfully ', true, $data, null);
         } catch (ValidationException $e) {
             return new Response($e->getCode(), $e->getMessage(), false, null, $e->getErrors());
         } catch (Exception $e){
             return new Response($e->getCode(), $e->getMessage(), false, null, null);
         }
-
     }
 
+
+
+
+    public function verifyOtp($otp)
+    {
+        try {
+            $r = $this->model->verifyOtp($otp);
+            $this->model->setActiveAccount($otp);
+            return new Response(200, 'Your account has been activated', true, null, null);
+        } catch (Throwable $th) {
+            return new Response($th->getCode(), $th->getMessage(), false, null, null);
+        }  catch (Exception $e) {
+            return new Response($e->getCode(), $e->getMessage(), false, null, null);
+        }
+    }
+
+
+    public function sendNewOtp($email)
+    {
+        try {
+            $otpData = $this->createOtp();
+            $otp = $otpData['otp'];
+            $otpExpires = $otpData['otp_expires'];
+            $this->model->setOtp($email, $otp, $otpExpires);
+            $this->sendOneTimePassword($email, $otp);
+            return new Response(200, 'otp sent successfully', true, null);
+        } catch (\Throwable $e) {
+            return new Response($e->getCode(), $e->getMessage(), false, null, null);
+        }
+    }
 
     public function update(string $id, $data = [])
     {
@@ -89,7 +162,7 @@ class UserService
         try {
             $response = $this->model->findById($id);
             $deleted = $this->model->deleteById($id);
-            return new Response(200, 'exhibition deleted', true, $response, null);
+            return new Response(200, 'user deleted successfully', true, $response, null);
         } catch (DatabaseException $th) {
             return new Response($th->getCode(), $th->getMessage(), false, null);
         } catch (Exception $th) {
@@ -109,25 +182,24 @@ class UserService
     }
 
 
-    public function login($request)
+    public function login($userData)
     {
         try {
-            $user = $this->model->getByQuery(['email' => $request['email']])[0];
+            $user = $this->model->getByQuery(['email' => $userData['email']])[0];
             $hashPassword = $user->password;
-            $plainPassword = $request['password'];
+            $plainPassword = $userData['password'];
             if (!password_verify($plainPassword, $hashPassword)) {
                 return new Response(400, 'password not match', false);
             }
-            
             helper('jwt');
-            $token = getSignedJWTForUser($user->id, $user->email,  $user->is_author, $user->name);
+            $token = getSignedJWTForUser($user);
             $response = new Response(200, 'user authenticated', true);
             $response->setResult(['token' => $token]);
             return $response;
         } catch (ValidationException $e) {
             return new Response(400, $e->getErrors(), false);
-        } catch (Exception $e) {
-            return new Response(400, $e->getMessage(), false);
+        } catch (Exception $ex) {
+            return new Response($ex->getCode(), $ex->getMessage(), false);
         }
     }
 

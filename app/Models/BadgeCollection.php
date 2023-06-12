@@ -250,20 +250,6 @@ class BadgeCollection extends Model
 		}
 	}
 
-	public function check($userId, $productId) 
-	{
-		try {
-			$query = $this->join('exhibitons e', 'e.id = badges_collection');
-			$result = $query->get()->getResult();
-			if ($result) { // jika sudah pernah ngasih badge
-				return true;
-			}
-			return false;
-		} catch (Exception $e) {
-			throw $e;
-		}
-	}
-
 	
 	/**
 	 * @param mixed $userId
@@ -317,18 +303,6 @@ class BadgeCollection extends Model
 
 
 	}
-
-
-    function getBadgeOfUser($userId)
-    {
-        try {
-			$query = $this->where(['user_id' => $userId]);
-			$result = $query->get()->getResult();
-			return $result;
-		} catch (Exception $e) {
-			throw $e;
-		}
-    }
     
 
 }

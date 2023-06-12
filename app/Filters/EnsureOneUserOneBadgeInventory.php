@@ -13,7 +13,7 @@ use Exception;
 /**
  * To make sure one user has one inventory at one exhibition
  */
-class MakeSureOneUserHasOneInventory implements FilterInterface
+class EnsureOneUserOneBadgeInventory implements FilterInterface
 {
     use ResponseTrait;  
 
@@ -30,14 +30,13 @@ class MakeSureOneUserHasOneInventory implements FilterInterface
             return $response;
         } 
             helper('jwt');
-            
-            $reqExhibitionId = $request->getJSON(true)['exhibition_id'];
-            $reqUserId = $request->getJSON(true)['user_id'];
-
+            $payload = toPayloadFromRequset($request);
+            $requestBody = $request->getJSON(true);
+            $exhibitionId = $requestBody['exhibition_id'];
+            $userId = $payload['id'];
             $inventoryModel = new BadgeInventory();
-            $query = $inventoryModel->where('user_id', $reqUserId)->where('exhibition_id', $reqExhibitionId);
+            $query = $inventoryModel->where('user_id', $userId)->where('exhibition_id', $exhibitionId);
             $userHasInventory = $query->get()->getResult();
-
             if ($userHasInventory) {
                  $response = service('response');
                 $response->setStatusCode(400);

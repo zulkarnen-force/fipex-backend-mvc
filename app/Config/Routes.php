@@ -85,8 +85,20 @@ $routes->get('products/leaderboard/categories/(:segment)', 'ProductController::g
 
 
 
-// User CRUD
 
+/**
+ * Auth
+ */
+$routes->get('pages/verify/failure', 'UserController::showVerifyFailure');
+$routes->get('pages/verify/success', 'UserController::showVerifySuccess');
+$routes->post('users/verify', 'UserController::verifyOtpCode', ['filter' => 'CheckUserVerification']);
+$routes->get('users/verify', 'UserController::verifyLinkActivation',  ['filter' => 'CheckUserVerification']);
+$routes->post('users/otp', 'UserController::createNewOtp');
+$routes->post('auth/register', 'UserController::register');
+$routes->post('auth/login', 'UserController::login/$1'); // , ['filter' => 'MakeSureHasValid']
+$routes->get('auth/me', 'UserController::me', ['filter' => 'auth']);
+
+// User CRUD
 $routes->post('users/upload/', 'UserController::storeImage');
 $routes->get('users', 'UserController::index');
 $routes->get('users/(:segment)', 'UserController::show/$1');
@@ -94,29 +106,23 @@ $routes->put('users/(:segment)', 'UserController::update/$1');
 $routes->delete('users/(:segment)', 'UserController::destroy/$1');
 
 
-/**
- * Auth
- */
-$routes->post('auth/register', 'UserController::register');
-$routes->post('auth/login', 'UserController::login/$1');
-$routes->get('auth/me', 'UserController::me', ['filter' => 'auth']);
+
 
 /**
  * Use cases
  */
 $routes->get('user/check/products/(:segment)', 'BadgeCollectionController::checkUserHasGivenBadge/$1');
-$routes->post('user/send/badge/products/(:segment)', 'BadgeCollectionController::sendBadgeUserToProduct/$1', ['filter' => 'MakeSureEnoughBadge']);
+$routes->post('user/send/badge/products/(:segment)', 'BadgeCollectionController::sendBadgeUserToProduct/$1' , ['filter' => 'MakeSureEnoughBadge']); 
 $routes->post('user/cancle/badge/products/(:segment)', 'BadgeCollectionController::cancleBadgeOfProduct/$1', ['filter' => 'auth']);
 $routes->get('products/(:segment)/badges', 'BadgeCollectionController::getBadgesOfProduct/$1');
 $routes->get('products/(:segment)/comments', 'BadgeCollectionController::getCommentsOfProduct/$1');
-
 /**
  * Badge Inventories
  */
 $routes->get('badges/inventories', 'BadgeInventoryController::index');
 $routes->get('badges/inventories/(:segment)', 'BadgeInventoryController::show/$1');
 $routes->get('user/badges', 'BadgeInventoryController::getBadgesOfUser', ['filter' => 'auth']);
-$routes->post('badges/inventories', 'BadgeInventoryController::create', ['filter' => 'EnsureOneUserOneBadgeInventory']);
+$routes->post('badges/inventories', 'BadgeInventoryController::create', ['filter' => 'EnsureOneUserOneBadgeInventory']); // ['filter' => 'EnsureOneUserOneBadgeInventory']
 $routes->put('badges/inventories/(:segment)', 'BadgeInventoryController::update/$1');
 $routes->delete('badges/inventories/(:segment)', 'BadgeInventoryController::destroy/$1');
 

@@ -25,7 +25,7 @@ class BadgeInventory extends Model
 
     protected $validationRules = [
         // 'badge_type'        => 'required|in_list[silver,gold,platinum]',
-        // 'badge_count'        => 'required',
+        'badge_count'        => 'required',
         'user_id'        =>  'required',
         'exhibition_id'        => 'required',
     ];

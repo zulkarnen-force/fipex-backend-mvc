@@ -37,7 +37,7 @@ function toPayloadFromRequset(Request $request)
 function getSignedJWTForUser($user)
 {   
     $issuedAtTime = time();
-    $tokenTimeToLive = strtotime('+1 day', $issuedAtTime);
+    $tokenTimeToLive = 24 * 60 * 60;
     $tokenExpiration = $issuedAtTime + $tokenTimeToLive;
     $payload = [
         'email' => $user->email,

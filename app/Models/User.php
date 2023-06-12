@@ -20,7 +20,10 @@ class User extends Model
         'is_author',
         'password',
         'image_url',
-        'bio'
+        'bio',
+		'otp',
+		'otp_expires',
+		'is_valid',
     ];
 
     protected $updatedField = 'updated_at';
@@ -34,8 +37,6 @@ class User extends Model
 
     ];
 
-
-    
     protected $beforeInsert = ['encryptPassword'];
     protected $beforeUpdate = ['beforeUpdate'];
 
@@ -71,31 +72,6 @@ class User extends Model
     private function hashPassword(string $plaintextPassword): string
     {
         return password_hash($plaintextPassword, PASSWORD_BCRYPT);
-    }
-                                      
-    public function findUserByEmailAddress(string $emailAddress)
-    {
-        $user = $this
-            ->asArray()
-            ->where(['email' => $emailAddress])
-            ->first();
-
-        if (!$user) 
-            throw new Exception('User does not exist for specified email address');
-
-        return $user;
-    }
-    public function findUserByUid(string $uid)
-    {
-        $user = $this
-            ->asArray()
-            ->where(['uid' => $uid])
-            ->first();
-
-        if (!$user) 
-            throw new Exception('User does not exist for specified email address');
-
-        return $user;
     }
 
     public function store($data)
@@ -183,18 +159,18 @@ class User extends Model
 	}
 
 	
-	public function getByQuery($where = [],$fields = ["*"])
+	public function getByQuery($query = [], $fields = ["*"])
 	{
 		try {
-			$query = $this->select($fields)->getWhere($where);
-			if ($query === false) {
+			$q = $this->select($fields)->getWhere($query);
+			if ($q === false) {
 				throw new DatabaseException("errors");
 			}
 			
-			$result = $query->getResult();
+			$result = $q->getResult();
 		
 			if (empty($result)) {
-				throw new Exception("record not found", 400);
+				throw new Exception("record not found", 404);
 			}
 
 			return $result;
@@ -202,5 +178,69 @@ class User extends Model
 			throw $e;
 		}
 	}
+
+
+	public function findOneByEmail($email = "")
+	{
+		try {
+			$user = $this->where(['email' => $email])->first();
+			if (!$user) {
+				throw new Exception('user not found', 404);
+			}
+			return $user;
+		} catch (\Throwable $th) {
+			throw $th;
+		}
+	}
+
+	public function verifyOtp($otp)
+	{
+		$r = $this->where('otp', $otp)->first();
+		if (!$r) {
+			throw new Exception('Your otp is invalid', 400);
+		}
+		$activation_expired = time() > $r['otp_expires'];
+		if ($activation_expired) {
+			throw new Exception('OTP code has expired', 400);
+		}
+		return true;
+	}
+
+	public function setActiveAccount($otp)
+	{
+		$this->set('is_valid', true);
+		$this->where('otp', $otp);
+		$this->update();
+	}
+
+
+	public function setOtp($email, $otp, $otp_expires)
+	{
+		try {
+			$user = $this->findOneByEmail($email);
+			$this->set('otp', $otp);
+			$this->set('otp_expires', $otp_expires);
+			$this->where('email', $email);
+			$this->update();
+		} catch (\Throwable $th) {
+			throw $th;
+		}
+	}
+
+	public function hasVerification($userId)
+    {
+        $result = $this->select()->where('id', $userId)->first();
+        return  $result['is_valid']; 
+    }
+
+	public function isValidUser($otp)
+    {
+        $u = new User();
+        $validated = $u->select()->where('otp', $otp)->where('is_valid', true)->first();
+        if ($validated) {
+            throw new Exception('user has been verification', 400);
+        }
+        return true;
+    }
     
 }

@@ -221,7 +221,7 @@ class BadgeCollectionService
             $productModel = new Product();
             $productModel->update($productId, ['total_points' => $total_points]);
 
-            return new Response(200, 'badge derived successfully 🏍',  true, null);
+            return new Response(200, 'badge derived successfully',  true, null);
             
         } catch (ValidationException $e) {
             return new Response($e->getCode(), $e->getMessage(), false, null, $e->getErrors());
@@ -268,12 +268,7 @@ class BadgeCollectionService
         }
     }
 
-    public function checkIsHasGivenBadge($userId, $productId)
-    {
-        // $hasGiven = $this->model->isUserHasGivenBadge($userId, $productId);
-        // return $hasGiven;
-        return $this->model->check($userId, $productId);
-    }
+
 }
 
 ?>

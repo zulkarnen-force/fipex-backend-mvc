@@ -29,17 +29,80 @@ class UserController extends ResourceController
         return $this->respond($response->getResponse(), $response->getCode());
     }
 
+    public function verifyOtpCode()
+    {
+        $validation = \Config\Services::validation();
+        $validation->setRules([
+            'otp' => 'required',
+        ]);
+        $validation->withRequest($this->request)->run();
+        if (!empty($validation->getErrors())) {
+            return $this->fail(
+                $validation->getErrors()
+            );
+        }
+        $otp = $this->request->getJsonVar('otp');
+        $res = $this->service->verifyOtp($otp);
+        return $this->respond($res->getResponse(), $res->getCode());
+    }
+
+    
+    public function verifyLinkActivation()
+    {
+        $otp = $this->request->getGet('otp');
+        $res = $this->service->verifyOtp($otp);
+        if (!$res->isSuccess()) {
+            return redirect()->to('pages/verify/failure?message='.$res->getMessage());
+        }
+        return redirect()->to('pages/verify/success?message='.$res->getMessage());
+    }
+
+
+    public function showVerifyFailure()
+    {
+        $message = $this->request->getGet('message');
+        return view('errors/html/verify_otp', ['message' => $message]);
+    }
+
+    public function showVerifySuccess()
+    {
+        $message = $this->request->getGet('message');
+        return view('success/html/verify_otp', ['message' => $message]);
+    }
+
+
+
+    public function createNewOtp()
+    {
+        try {
+            $validation = \Config\Services::validation();
+            $validation->setRules([
+                'email' => 'required',
+            ]);
+            $validation->withRequest($this->request)->run();
+            if (!empty($validation->getErrors())) {
+                return $this->fail(
+                    $validation->getErrors()
+                );
+            }
+            $email = $this->request->getJsonVar('email');
+            $response = $this->service->sendNewOtp($email);
+            return $this->respond($response->getResponse(), $response->getCode());
+        } catch (\Throwable $th) {
+            throw $th;
+        }
+    }
+
     public function show($id = null)
     {
         $response = $this->service->find($id, ["id", "email", "name", "bio", "image_url", 'is_author', 'is_admin', "created_at", "updated_at"]);
-
         if (!$response->isSuccess()) {
             return $this->respond($response->getResponse(), $response->getCode());
         }
-        
         return $this->respond($response->getData(), $response->getCode());
-
     }
+
+    
     public function update($id = null)
     {
         $requset = $this->request->getJson(true);
@@ -56,25 +119,9 @@ class UserController extends ResourceController
 
     public function login()
     {
-        $validation = \Config\Services::validation();
-
-        $validation->setRules([
-            'email' => 'required',
-            'password' => 'required',
-        ]);
-
-        $validation->withRequest($this->request)->run();
-        
-        if (!empty($validation->getErrors())) {     
-            return $this->fail(
-                $validation->getErrors()
-            );
-        }
-
         $request = $this->request->getJSON(true);
         $response = $this->service->login($request);
         return $this->respond($response->getResponse(), $response->getCode());
-
     }
     
     public function me() 

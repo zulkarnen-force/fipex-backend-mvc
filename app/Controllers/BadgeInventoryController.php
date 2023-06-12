@@ -23,19 +23,18 @@ class BadgeInventoryController extends ResourceController
     public function create()
     {
         $requestJson = $this->request->getJson(true);
-
         $validation = \Config\Services::validation();
-
         $validation->setRules([
         ]);
-
         $validation->withRequest($this->request)->run();
-        
         if (!empty($validation->getErrors())) {     
             return $this->fail(
                 $validation->getErrors()
             );
         }
+        helper('jwt');
+        $userId = toPayloadFromRequset($this->request)['id'];
+        $requestJson['user_id'] = $userId;
 
         // u4d1960
         // s1f45t

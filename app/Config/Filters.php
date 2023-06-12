@@ -6,12 +6,12 @@ use CodeIgniter\Config\BaseConfig;
 use CodeIgniter\Filters\CSRF;
 use CodeIgniter\Filters\DebugToolbar;
 use CodeIgniter\Filters\Honeypot;
-use CodeIgniter\Filters\InvalidChars;
-use CodeIgniter\Filters\SecureHeaders;
 use App\Filters\JWTAuthenticationFilter;
 use App\Filters\MakeSureEnoughBadge;
-use App\Filters\MakeSureOneUserHasOneInventory;
+use App\Filters\MakeSureHasValid;
+use App\Filters\EnsureOneUserOneBadgeInventory;
 use App\Filters\OnlyAuthor;
+use App\Filters\CheckUserVerification;
 
 class Filters extends BaseConfig
 {
@@ -30,7 +30,9 @@ class Filters extends BaseConfig
         'auth' => JWTAuthenticationFilter::class,
         'MakeSureEnoughBadge' => MakeSureEnoughBadge::class,
         'OnlyAuthor' => OnlyAuthor::class,
-        'EnsureOneUserOneBadgeInventory' => MakeSureOneUserHasOneInventory::class,
+        'EnsureOneUserOneBadgeInventory' => EnsureOneUserOneBadgeInventory::class,
+        'MakeSureHasValid' => MakeSureHasValid::class,
+        'CheckUserVerification' => CheckUserVerification::class,
     ];
 
     /**
