@@ -18,8 +18,8 @@ class UserController extends ResourceController
 
     public function index()
     {
-        $products = $this->service->list();
-        return $this->respond($products->getData());
+        $users = $this->service->list();
+        return $this->respond($users->getData());
     }
 
     public function register()
@@ -42,19 +42,19 @@ class UserController extends ResourceController
             );
         }
         $otp = $this->request->getJsonVar('otp');
-        $res = $this->service->verifyOtp($otp);
-        return $this->respond($res->getResponse(), $res->getCode());
+        $response = $this->service->verifyOtp($otp);
+        return $this->respond($response->getResponse(), $response->getCode());
     }
 
     
-    public function verifyLinkActivation()
+    public function verifyOtpLink()
     {
         $otp = $this->request->getGet('otp');
-        $res = $this->service->verifyOtp($otp);
-        if (!$res->isSuccess()) {
-            return redirect()->to('pages/verify/failure?message='.$res->getMessage());
+        $response = $this->service->verifyOtp($otp);
+        if (!$response->isSuccess()) {
+            return redirect()->to('pages/verify/failure?message='.$response->getMessage());
         }
-        return redirect()->to('pages/verify/success?message='.$res->getMessage());
+        return redirect()->to('pages/verify/success?message='.$response->getMessage());
     }
 
 
@@ -69,8 +69,6 @@ class UserController extends ResourceController
         $message = $this->request->getGet('message');
         return view('success/html/verify_otp', ['message' => $message]);
     }
-
-
 
     public function createNewOtp()
     {
@@ -119,6 +117,18 @@ class UserController extends ResourceController
 
     public function login()
     {
+        $validation = \Config\Services::validation();
+        $validation->setRules([
+            'email' => 'required',
+            'password' => 'required',
+        ]);
+        $validation->withRequest($this->request)->run();
+
+        if (!empty($validation->getErrors())) {
+            return $this->fail(
+                $validation->getErrors()
+            );
+        }
         $request = $this->request->getJSON(true);
         $response = $this->service->login($request);
         return $this->respond($response->getResponse(), $response->getCode());

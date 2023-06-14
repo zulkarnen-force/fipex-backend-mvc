@@ -43,7 +43,7 @@ class MakeSureEnoughBadge implements FilterInterface
                 $userBadgeInventory = $badgeInventory->getByQuery(['user_id' => $userId], ['*']);
                 $user = new User();
                 $userHasVerification = $user->hasVerification($userId);
-                if ($userHasVerification) {
+                if (!$userHasVerification) {
                     throw new Exception('the user has not verified', 403);
                 }
                 

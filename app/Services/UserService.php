@@ -72,11 +72,11 @@ class UserService
         try {
             $this->email->setFrom('fipex@ruang-ekspresi.id', 'Manajemen FiPEX - Information System');
             $this->email->setTo($email);
-            $message = "Berikut adalah kode verifikasi yang dapat digunakan untuk login ke FiPEX Apps: <br>".
+            $message = "Berikut adalah kode verifikasi yang dapat digunakan untuk memverifikasi akun FiPEX: <br>".
             "<h2>".$otp."</h2> <br>".
             '<p>Atau klik tautan berikut untuk mengaktifkan akun Anda: '. $this->getActivationLink($otp). '</p>'.
             "<i>Kode di atas hanya berlaku untuk 30 menit. Jangan memberitahukan kode tersebut ke siapapun, termasuk pihak panitia FiPEX.</i>";
-            $this->email->setSubject('FiPEX Account Activation');
+            $this->email->setSubject('FiPEX Account Verification');
             $this->email->setMessage($message);  
             if(!$this->email->send()) { 
                 throw new Exception('error sending activation email', 400);
@@ -118,7 +118,7 @@ class UserService
         try {
             $r = $this->model->verifyOtp($otp);
             $this->model->setActiveAccount($otp);
-            return new Response(200, 'Your account has been activated', true, null, null);
+            return new Response(200, 'Your account has been verify', true, null, null);
         } catch (Throwable $th) {
             return new Response($th->getCode(), $th->getMessage(), false, null, null);
         }  catch (Exception $e) {

@@ -193,6 +193,7 @@ class User extends Model
 		}
 	}
 
+	
 	public function verifyOtp($otp)
 	{
 		$r = $this->where('otp', $otp)->first();
@@ -205,6 +206,7 @@ class User extends Model
 		}
 		return true;
 	}
+
 
 	public function setActiveAccount($otp)
 	{
@@ -227,11 +229,13 @@ class User extends Model
 		}
 	}
 
+
 	public function hasVerification($userId)
     {
         $result = $this->select()->where('id', $userId)->first();
         return  $result['is_valid']; 
     }
+
 
 	public function isValidUser($otp)
     {
@@ -241,6 +245,5 @@ class User extends Model
             throw new Exception('user has been verification', 400);
         }
         return true;
-    }
-    
+    }   
 }

@@ -89,14 +89,14 @@ $routes->get('products/leaderboard/categories/(:segment)', 'ProductController::g
 /**
  * Auth
  */
-$routes->get('pages/verify/failure', 'UserController::showVerifyFailure');
-$routes->get('pages/verify/success', 'UserController::showVerifySuccess');
-$routes->post('users/verify', 'UserController::verifyOtpCode', ['filter' => 'CheckUserVerification']);
-$routes->get('users/verify', 'UserController::verifyLinkActivation',  ['filter' => 'CheckUserVerification']);
-$routes->post('users/otp', 'UserController::createNewOtp');
 $routes->post('auth/register', 'UserController::register');
 $routes->post('auth/login', 'UserController::login/$1'); // , ['filter' => 'MakeSureHasValid']
 $routes->get('auth/me', 'UserController::me', ['filter' => 'auth']);
+$routes->post('users/verify', 'UserController::verifyOtpCode', ['filter' => 'CheckUserVerification']);
+$routes->get('users/verify', 'UserController::verifyOtpLink',  ['filter' => 'CheckUserVerification']);
+$routes->post('users/otp', 'UserController::createNewOtp');
+$routes->get('pages/verify/failure', 'UserController::showVerifyFailure');
+$routes->get('pages/verify/success', 'UserController::showVerifySuccess');
 
 // User CRUD
 $routes->post('users/upload/', 'UserController::storeImage');

@@ -25,6 +25,9 @@ class CheckUserVerification implements FilterInterface
             }
             $validationStatus = $userModel->isValidUser($otp);
         } catch (\Throwable $e) {
+            if ($request->getMethod() === 'get') {
+                return redirect()->to('pages/verify/failure?message='.$e->getMessage());
+            }
             $response = service('response');
             $response->setStatusCode($e->getCode());
             $response->setJSON(["success" => false, "message" => $e->getMessage()]);
