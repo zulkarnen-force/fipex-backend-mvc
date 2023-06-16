@@ -117,7 +117,7 @@ class UserService
     {
         try {
             $r = $this->model->verifyOtp($otp);
-            $this->model->setActiveAccount($otp);
+            $this->model->setValidUser($otp);
             return new Response(200, 'Your account has been verify', true, null, null);
         } catch (Throwable $th) {
             return new Response($th->getCode(), $th->getMessage(), false, null, null);

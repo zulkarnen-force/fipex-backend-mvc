@@ -168,29 +168,28 @@ class BadgeCollectionService
 
     private function isOwnedProductOfUser($userId, $productId)
     {
-        $u = new User();
-        $p = new Product();
-        $pMember = new ProductMember();
-        $r = $u->find($userId);
-        if (!$r) {
+        $userModel = new User();
+        $productModel = new Product();
+        $productMemberModel = new ProductMember();
+        $user = $userModel->find($userId);
+        if (!$user) {
             throw new Exception('user not found');
         }
 
-        if ($r['is_author']) 
+        if ($user['is_author']) 
         {
-            $qP = $p->where('author_id', $userId)->where('id', $productId);
+            $qP = $productModel->where('author_id', $userId)->where('id', $productId);
             if ($qP->get()->getResult()) {
                 return true;
             }
             return false;
         }
-        $qPM = $pMember->where('user_id', $userId)->where('product_id', $productId);
-        $productOwnedMember = $qPM->get()->getResult();
+        $memberOfProduct = $productMemberModel->where('user_id', $userId)->where('product_id', $productId);
+        $productOwnedMember = $memberOfProduct->get()->getResult();
         if ($productOwnedMember) {
             return true;
         }
         return false;
-
     }
 
     public function sendBadgeToProduct($request)

@@ -208,7 +208,7 @@ class User extends Model
 	}
 
 
-	public function setActiveAccount($otp)
+	public function setValidUser($otp)
 	{
 		$this->set('is_valid', true);
 		$this->where('otp', $otp);
