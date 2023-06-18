@@ -172,24 +172,20 @@ class BadgeCollectionService
         $productModel = new Product();
         $productMemberModel = new ProductMember();
         $user = $userModel->find($userId);
+        
         if (!$user) {
             throw new Exception('user not found');
         }
-
+        
         if ($user['is_author']) 
         {
-            $qP = $productModel->where('author_id', $userId)->where('id', $productId);
-            if ($qP->get()->getResult()) {
-                return true;
-            }
-            return false;
+            $ownerOfProduct = $productModel->where('author_id', $userId)->where('id', $productId)->first();
+            if ($ownerOfProduct)  throw new Exception('product owner are not allowed to rate their products', 403);
         }
-        $memberOfProduct = $productMemberModel->where('user_id', $userId)->where('product_id', $productId);
-        $productOwnedMember = $memberOfProduct->get()->getResult();
-        if ($productOwnedMember) {
-            return true;
-        }
-        return false;
+
+        $memberOfProduct = $productMemberModel->where('user_id', $userId)->where('product_id', $productId)->first();
+        if ($memberOfProduct)  throw new Exception('product member are not allowed to rate their products', 403);
+
     }
 
     public function sendBadgeToProduct($request)
@@ -203,6 +199,7 @@ class BadgeCollectionService
             $request['exhibition_id'] = $badgeInventoryUser[0]->exhibition_id;
             $isHasGivenBadge = $this->model->isUserHasGivenBadge($userId, $productId);
             $productOwned = $this->isOwnedProductOfUser($userId, $productId);
+            var_dump($productOwned);
             if ($productOwned) {
                 return new Response(401, 'users can only send badges to other products, but this request sends to the property of the user', false, null);
             }
@@ -210,8 +207,8 @@ class BadgeCollectionService
                 return new Response(400, 'your has been given badge to this product 🖐', false, null);
             }
         
-            $this->model->store($request);
-            $this->decrementBadgeUser($userId);
+            // $this->model->store($request);
+            // $this->decrementBadgeUser($userId);
 
            $productData = $this->getBadgesWithTotalPoints($productId);
            $data = $productData->getData();
