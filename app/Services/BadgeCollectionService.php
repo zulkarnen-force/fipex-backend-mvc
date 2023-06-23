@@ -199,7 +199,6 @@ class BadgeCollectionService
             $request['exhibition_id'] = $badgeInventoryUser[0]->exhibition_id;
             $isHasGivenBadge = $this->model->isUserHasGivenBadge($userId, $productId);
             $productOwned = $this->isOwnedProductOfUser($userId, $productId);
-            var_dump($productOwned);
             if ($productOwned) {
                 return new Response(401, 'users can only send badges to other products, but this request sends to the property of the user', false, null);
             }
@@ -207,8 +206,8 @@ class BadgeCollectionService
                 return new Response(400, 'your has been given badge to this product 🖐', false, null);
             }
         
-            // $this->model->store($request);
-            // $this->decrementBadgeUser($userId);
+            $this->model->store($request);
+            $this->decrementBadgeUser($userId);
 
            $productData = $this->getBadgesWithTotalPoints($productId);
            $data = $productData->getData();
