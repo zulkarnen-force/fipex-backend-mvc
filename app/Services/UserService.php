@@ -79,7 +79,7 @@ class UserService
             $this->email->setSubject('FiPEX Account Verification');
             $this->email->setMessage($message);  
             if(!$this->email->send()) { 
-                throw new Exception('error sending activation email', 400);
+                throw new Exception('error sending OTP code to email', 400);
             }
             return true;
         } catch (ValidationException $e) {

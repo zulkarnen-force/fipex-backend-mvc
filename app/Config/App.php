@@ -23,7 +23,7 @@ class App extends BaseConfig
      *
      * @var string
      */
-    public $baseURL = 'http://localhost/fipex-mvc/';
+    public $baseURL = 'http://localhost/fipex/';
 
     /**
      * --------------------------------------------------------------------------
