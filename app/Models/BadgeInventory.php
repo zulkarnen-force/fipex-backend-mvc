@@ -139,7 +139,7 @@ class BadgeInventory extends Model
                 $result = $query->getResult();
             
                 if (empty($result)) {
-                    throw new Exception("record not found", 400);
+                    throw new Exception("badge inventory not found", 400);
                 }
     
                 return $result;

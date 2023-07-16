@@ -25,6 +25,7 @@ class BadgeInventoryController extends ResourceController
         $requestJson = $this->request->getJson(true);
         $validation = \Config\Services::validation();
         $validation->setRules([
+            'comment' => 'required',
         ]);
         $validation->withRequest($this->request)->run();
         if (!empty($validation->getErrors())) {     

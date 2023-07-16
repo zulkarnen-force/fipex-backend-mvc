@@ -5,6 +5,7 @@ namespace App\Services;
 
 use App\Exceptions\ValidationException;
 use App\Models\BadgeInventory;
+use App\Models\GuestBook;
 use App\Models\ProductThumbnail;
 use App\Utils\Response;
 use CodeIgniter\Database\Exceptions\DatabaseException;
@@ -39,7 +40,9 @@ class BadgeInventoryService
 
     public function create($data)
     {
+        $guestBook = new GuestBook();
         try {
+            $guestBook->store($data);
             $insertedData = $this->model->store($data);
             if ($insertedData === false) {
                 return new Response(400, 'error insert data', false, null, null);
